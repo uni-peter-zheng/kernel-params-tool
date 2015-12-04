@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Language>
+	<zh_CN>
+		<Main_title>内核参数修改工具</Main_title>
+		<Apply>应用</Apply>
+		<Apply_all>应用所有</Apply_all>
+		<Restore>还原</Restore>
+		<Restore_all>还原所有</Restore_all>
+		<Setting_info>设置参数说明</Setting_info>
+		<Quit>退出</Quit>
+	</zh_CN>
+	<en_US>
+		<Main_title>kernel params setting</Main_title>
+		<Apply>Apply</Apply>
+		<Apply_all>Apply_all</Apply_all>
+		<Restore>Restore</Restore>
+		<Restore_all>Restore_all</Restore_all>
+		<Setting_info>Setting_info</Setting_info>
+		<Quit>Quit</Quit>
+	</en_US>
+</Language>
