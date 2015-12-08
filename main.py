@@ -36,7 +36,7 @@ class MainApp:
     
     def __init__(self):
         locale_lang = locale.getdefaultlocale()
-        language_xml = ElementTree(file="./language.xml")
+        language_xml = ElementTree(language_xml)
         language_root = language_xml.getroot()
         if locale_lang[0] == "zh_CN":
             language = language_root.find('zh_CN')
