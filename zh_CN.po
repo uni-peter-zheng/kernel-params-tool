@@ -185,6 +185,10 @@ msgstr "设置参数说明"
 msgid "Quit"
 msgstr "退出"
 
+#: kernel-params-tool.py:450
+msgid "Sorry, you haven't privileges to write in file:\n"
+msgstr "没有写入该文件的权限:\n"
+
 #: kernel-params-tool.py:504
 msgid "Apply all parameters"
 msgstr "应用修改参数"

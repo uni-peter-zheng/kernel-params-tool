@@ -314,16 +314,6 @@ class MainApp:
             except IOError, (errno, strerror):
                 self.valuestore.clear() 
                 param_content=''
-                    #msg_error = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                    #                              gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,
-                    #                              "error reading file " + self.selected_dir + "/" + paramValue +
-                    #                              "\n" + strerror)
-                    #msg_error.show()
-                    #msg_error.connect("response", self.error_response)
-                    #self.editinfoButton.set_sensitive(False)
-                    #self.applyButton.set_sensitive(False)
-                    #self.restoreButton.set_sensitive(False)
-                    #return
 
             subparams = self.enumerate_subparams(param_content)
             if (param_locked or param_readonly) and len(subparams)==1:
@@ -443,10 +433,11 @@ class MainApp:
 
 
     def onParamEdit(self, treeview, path, column):
+        _=gettext.gettext
         if self.procReader.isReadOnly(self.selected_dir + "/" + self.selected_param):
             msg_readonly = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                                           gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,
-                                          "Sorry, you haven't privileges to write in file:\n" +
+                                          _("Sorry, you haven't privileges to write in file:\n") +
                                           self.selected_dir + "/" + self.selected_param)
             msg_readonly.show()
             msg_readonly.connect("response", self.error_readonly)          
