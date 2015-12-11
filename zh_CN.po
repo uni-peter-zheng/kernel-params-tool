@@ -1,0 +1,246 @@
+# Chinese translations for PACKAGE package
+# PACKAGE 软件包的简体中文翻译.
+# Copyright (C) 2015 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# root <348958453@qq.com>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-12-10 13:08+0800\n"
+"PO-Revision-Date: 2015-12-10 13:08+0800\n"
+"Last-Translator: root <348958453@qq.com>\n"
+"Language-Team: Chinese (simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: applyrestorewindow.py:40
+msgid "Path"
+msgstr "参数名"
+
+#: applyrestorewindow.py:47 kernel-params-tool.py:192
+msgid "Apply"
+msgstr "应用"
+
+#: applyrestorewindow.py:49 kernel-params-tool.py:194
+msgid "Restore"
+msgstr "还原"
+
+#: applyrestorewindow.py:59
+msgid "Apply selected"
+msgstr "应用"
+
+#: applyrestorewindow.py:61
+msgid "Restore selected"
+msgstr "应用"
+
+#: applyrestorewindow.py:62
+msgid "Cancel"
+msgstr "取消"
+
+#: editinfowindow.py:42
+msgid "Lock this parameter for editing"
+msgstr "锁定参数说明"
+
+#: editinfowindow.py:61
+msgid "Subparameter name:"
+msgstr "子参数名:"
+
+#: editinfowindow.py:68
+msgid "Edit data type"
+msgstr "数据类型"
+
+#: editinfowindow.py:72
+msgid "String value"
+msgstr "字符型"
+
+#: editinfowindow.py:75
+msgid "Maximum length:"
+msgstr "字符最大长度:"
+
+#: editinfowindow.py:86
+msgid "Integer value"
+msgstr "数值型"
+
+#: editinfowindow.py:90
+msgid "range of numbers"
+msgstr "数值范围"
+
+#: editinfowindow.py:91
+msgid "list of number items"
+msgstr "数值列表"
+
+#: editinfowindow.py:94
+msgid "Minimal number value:"
+msgstr "最小值:"
+
+#: editinfowindow.py:101
+msgid "Maximal number value:"
+msgstr "最大值:"
+
+#: editinfowindow.py:117
+msgid "Value"
+msgstr "数值"
+
+#: editinfowindow.py:118
+msgid "Description"
+msgstr "描述"
+
+#: editinfowindow.py:135
+msgid "Save settings"
+msgstr "保存"
+
+#: editinfowindow.py:137
+msgid "Close"
+msgstr "关闭"
+
+#: editinfowindow.py:147
+msgid "edit info & settings"
+msgstr "修改参数说明"
+
+#: editinfowindow.py:183 editinfowindow.py:242
+msgid "Info about selected subparameter \""
+msgstr "子参数说明 \""
+
+#: editinfowindow.py:213
+msgid "General info about "
+msgstr "参数说明 "
+
+#: editinfowindow.py:341
+msgid "Invalid value! Only numbers allowed in first column"
+msgstr "无效的值! 数值只能输入数字"
+
+#: editinfowindow.py:357
+msgid "Invalid value! Only numbers allowed in string length"
+msgstr "无效的值! 字符最大长度只能输入数字"
+
+#: editinfowindow.py:379
+msgid "Invalid value! Only numbers allowed for minimal and maximal values"
+msgstr "无效的值! 最大值与最小值中只能输入数字"
+
+#: editinfowindow.py:397
+msgid "Invalid value! Only unique numbers allowed"
+msgstr "无效的值! 数值列表中不能输入重复的数值"
+
+#: editinfowindow.py:434
+msgid "Info about "
+msgstr "参数 "
+
+#: editinfowindow.py:434
+msgid " successfully saved."
+msgstr "说明保存成功."
+
+#: kernel-params-tool.py:42
+msgid "kernrl params tool"
+msgstr "内核参数修改工具"
+
+#: kernel-params-tool.py:78
+msgid "Parameters"
+msgstr "参数列表"
+
+#: kernel-params-tool.py:113
+msgid "Info:"
+msgstr "参数说明:"
+
+#: kernel-params-tool.py:117
+msgid "Selected parameter values:"
+msgstr "参数值:"
+
+#: kernel-params-tool.py:118
+msgid "Selected parameter value:"
+msgstr "参数值:"
+
+#: kernel-params-tool.py:151
+msgid "Subparameter name"
+msgstr "子参数名"
+
+#: kernel-params-tool.py:152
+msgid "Current value"
+msgstr "当前值"
+
+#: kernel-params-tool.py:153 parameditor.py:33
+msgid "New value"
+msgstr "新设置值"
+
+#: kernel-params-tool.py:154
+msgid "Restore enabled"
+msgstr "还原"
+
+#: kernel-params-tool.py:193
+msgid "Apply_all"
+msgstr "应用所有"
+
+#: kernel-params-tool.py:195
+msgid "Restore_all"
+msgstr "还原所有"
+
+#: kernel-params-tool.py:196
+msgid "Setting_info"
+msgstr "设置参数说明"
+
+#: kernel-params-tool.py:197
+msgid "Quit"
+msgstr "退出"
+
+#: kernel-params-tool.py:504
+msgid "Apply all parameters"
+msgstr "应用修改参数"
+
+#: kernel-params-tool.py:505
+msgid "Selected parameters will be applied to kernel"
+msgstr "所选参数将会生效"
+
+#: kernel-params-tool.py:512
+msgid "Restore all parameters"
+msgstr "还原修改参数"
+
+#: kernel-params-tool.py:513
+msgid "Selected parameters will be restored from current kernel values"
+msgstr "所选参数将会撤销修改"
+
+#: parameditor.py:35
+msgid "Info"
+msgstr "说明"
+
+#: parameditor.py:53
+msgid "Save value and exit"
+msgstr "保存并关闭"
+
+#: parameditor.py:54
+msgid "Restore value"
+msgstr "还原"
+
+#: parameditor.py:55
+msgid "Exit"
+msgstr "关闭"
+
+#: parameditor.py:80
+msgid "edit parameter "
+msgstr "参数 "
+
+#: parameditor.py:167
+msgid "Maximum length for this string value is: "
+msgstr "字符最大长度是: "
+
+#: parameditor.py:168
+msgid ""
+"\n"
+"Press \"Settings\" button on main form if you want to change it."
+msgstr "\n如果需要修改请在选中此子参数的情况下按\"设置参数说明\"按键."
+
+#: parameditor.py:227
+msgid "Value for this parameter must be between "
+msgstr "数值必须在 "
+
+#: parameditor.py:227
+msgid " and "
+msgstr " 与 "
+
+#: parameditor.py:228
+msgid ""
+".\n"
+"Press \"Settings\" button on main form if you want to change it's range."
+msgstr "之间\n如果需要修改请在选中此子参数的情况下按\"设置参数说明\"按键"

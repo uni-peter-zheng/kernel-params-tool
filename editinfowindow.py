@@ -5,15 +5,18 @@
 import pygtk
 pygtk.require('2.0')
 import gtk, gobject
+import gettext
 
 from descriptionparser import *
 
 class EditInfoWindow:
-    def __init__(self, dp, paramview):
+
+    def __init__(self, dp, paramview, gettext):
         self.param_path=None
         self.dp = dp
         self.paramview = paramview
         attrs=None
+        _=gettext.gettext
         
         self.editInfoWindow = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.editInfoWindow.set_position(gtk.WIN_POS_CENTER)
@@ -38,7 +41,7 @@ class EditInfoWindow:
         self.editInfoSubVBox.pack_start(self.generalInfoFrame,True,True,0)
 
 #       checkbox for "locked" attribute
-        self.locked = gtk.CheckButton("Lock this parameter for editing")
+        self.locked = gtk.CheckButton(_("Lock this parameter for editing"))
         self.editInfoSubVBox.pack_start(self.locked,False,False,0)        
 
         # Frame, TextBufferm, TextView and stuff for subparameter info editor
@@ -57,21 +60,21 @@ class EditInfoWindow:
         self.editInfoSubVBox.pack_start(self.subparamInfoFrame,True,True,0)        
 
         # Text entry for subparameter name
-        self.subparamNameFrame = gtk.Frame("Subparameter name:")
+        self.subparamNameFrame = gtk.Frame(_("Subparameter name:"))
         self.subparamname = gtk.Entry()
         self.subparamNameFrame.add(self.subparamname)
         self.editInfoSubVBox.pack_start(self.subparamNameFrame,True,True,0)
         self.editInfoHBox.pack_start(self.editInfoSubVBox,True,True,0)
         
         # some widgets which set up subparameter data type
-        self.subparamAppearFrame = gtk.Frame("Edit data type")
+        self.subparamAppearFrame = gtk.Frame(_("Edit data type"))
         self.subparamAppearVBox = gtk.VBox(False,10)
         self.subparamAppearFrame.add(self.subparamAppearVBox)
         
-        self.stringMode = gtk.RadioButton(None, "String value")
+        self.stringMode = gtk.RadioButton(None, _("String value"))
         self.subparamAppearVBox.pack_start(self.stringMode,True,True,0)
         
-        self.maxlenlabel = gtk.Label("Maximum length:")
+        self.maxlenlabel = gtk.Label(_("Maximum length:"))
         self.maxlenlabel.set_alignment(0, 0)
         self.maxlenlabel.set_padding(2, 2)
         self.subparamAppearVBox.pack_start(self.maxlenlabel,True,True,0)
@@ -82,22 +85,22 @@ class EditInfoWindow:
         self.separator = gtk.HSeparator()
         self.subparamAppearVBox.pack_start(self.separator,True,True,0)
         
-        self.intMode = gtk.RadioButton(self.stringMode, "Integer value")
+        self.intMode = gtk.RadioButton(self.stringMode, _("Integer value"))
         self.subparamAppearVBox.pack_start(self.intMode,True,True,0)
         
         self.intModeCombo = gtk.combo_box_new_text()
-        self.intModeCombo.append_text("range of numbers")
-        self.intModeCombo.append_text("list of number items")
+        self.intModeCombo.append_text(_("range of numbers"))
+        self.intModeCombo.append_text(_("list of number items"))
         self.subparamAppearVBox.pack_start(self.intModeCombo,True,True,0)        
         
-        self.minnumlabel = gtk.Label("Minimal number value:")
+        self.minnumlabel = gtk.Label(_("Minimal number value:"))
         self.minnumlabel.set_alignment(0, 0)
         self.minnumlabel.set_padding(2, 2)
         self.subparamAppearVBox.pack_start(self.minnumlabel,True,True,0)
         self.minnum = gtk.Entry()
         
         self.subparamAppearVBox.pack_start(self.minnum,True,True,0)
-        self.maxnumlabel = gtk.Label("Maximal number value:")
+        self.maxnumlabel = gtk.Label(_("Maximal number value:"))
         self.maxnumlabel.set_alignment(0, 0)
         self.maxnumlabel.set_padding(2, 2)
         self.subparamAppearVBox.pack_start(self.maxnumlabel,True,True,0)
@@ -113,8 +116,8 @@ class EditInfoWindow:
         self.listvaluecell_num.set_property('editable', True)
         self.listvaluecell_text.set_property('editable', True)        
 
-        self.listvaluecolumn_num = gtk.TreeViewColumn("Value", self.listvaluecell_num,markup=0)
-        self.listvaluecolumn_text = gtk.TreeViewColumn("Description", self.listvaluecell_text,markup=1)
+        self.listvaluecolumn_num = gtk.TreeViewColumn(_("Value"), self.listvaluecell_num,markup=0)
+        self.listvaluecolumn_text = gtk.TreeViewColumn(_("Description"), self.listvaluecell_text,markup=1)
         self.listvaluetreeview.append_column(self.listvaluecolumn_num)
         self.listvaluetreeview.append_column(self.listvaluecolumn_text)
         self.subparamAppearVBox.pack_start(self.listvaluetreeview,True,True,0)
@@ -131,9 +134,9 @@ class EditInfoWindow:
         self.editInfoButtonBox = gtk.HBox(True,10)
 
         # et voila! here is the buttons
-        self.saveButton = gtk.Button("Save settings")
+        self.saveButton = gtk.Button(_("Save settings"))
         self.editInfoButtonBox.pack_start(self.saveButton,True,True,0)        
-        self.closeButton = gtk.Button("Close")
+        self.closeButton = gtk.Button(_("Close"))
         self.editInfoButtonBox.pack_start(self.closeButton,True,True,0)
         
         self.editInfoVBox.pack_start(self.editInfoButtonBox,False,True,0)        
@@ -143,7 +146,7 @@ class EditInfoWindow:
         self.editInfoWindow.set_size_request(675,475)
         
         self.editInfoWindow.add(self.editInfoVBox)
-        self.editInfoWindow.set_title("edit info & settings")        
+        self.editInfoWindow.set_title(_("edit info & settings"))        
         
         # define some signal handlers
         self.listvaluecell_num.connect('edited', self.cell_edited, 0)
@@ -179,7 +182,8 @@ class EditInfoWindow:
             self.removeButton.set_sensitive(True)            
 
     def name_edited(self, data=None):
-        self.subparamInfoFrame.set_label("Info about selected subparameter \""
+        _=gettext.gettext
+        self.subparamInfoFrame.set_label(_("Info about selected subparameter \"")
                                         + self.subparamname.get_text() + "\":")
 
     def strtype_selected(self, widget, data=None):        
@@ -201,6 +205,7 @@ class EditInfoWindow:
             self.listvaluetreeview.set_sensitive(True)            
         
     def edit_info(self, param_path, subparam_name, subparam_index, one=True):
+        _=gettext.gettext
         self.subparam_index=subparam_index
         self.param_path=param_path
         self.maxlen.set_text("")
@@ -209,7 +214,7 @@ class EditInfoWindow:
         self.listvaluestore.clear()
         
         self.param_path = param_path
-        self.generalInfoFrame.set_label("General info about " + param_path+":")
+        self.generalInfoFrame.set_label(_("General info about ") + param_path+":")
 
         param_info = self.dp.getInfo(self.param_path)
         if param_info!=None:
@@ -238,7 +243,7 @@ class EditInfoWindow:
             self.subparamNameFrame.set_no_show_all(False)
             self.subparamAppearFrame.set_no_show_all(False)
             self.locked.set_no_show_all(True)                                    
-            self.subparamInfoFrame.set_label("Info about selected subparameter \""
+            self.subparamInfoFrame.set_label(_("Info about selected subparameter \"")
                                              + subparam_name + "\":")
             subparam_info=self.dp.getSubParamInfo(param_path,subparam_index)
             if subparam_info!=None:
@@ -328,6 +333,7 @@ class EditInfoWindow:
 
         
     def cell_edited(self, cell, path, new_text, col_num):
+        _=gettext.gettext
         model = self.listvaluetreeview.get_model()
         try:
             if col_num==0:
@@ -337,7 +343,7 @@ class EditInfoWindow:
         except ValueError:
             msg_error = gtk.MessageDialog(self.editInfoWindow,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                                           gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,
-                                          "Invalid value! Only numbers allowed in first column")
+                                          _("Invalid value! Only numbers allowed in first column"))
             msg_error.show()
             msg_error.connect("response", self.error_response)
         
@@ -346,6 +352,7 @@ class EditInfoWindow:
         dlg.destroy()
 
     def saveClick(self, button):
+        _=gettext.gettext
         self.dp.setLocked(self.param_path, self.locked.get_active())
         if self.stringMode.get_active():
             try:
@@ -353,7 +360,7 @@ class EditInfoWindow:
             except ValueError:
                 msg_error = gtk.MessageDialog(self.editInfoWindow,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                                             gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,
-                                            "Invalid value! Only numbers allowed in string length")
+                                            _("Invalid value! Only numbers allowed in string length"))
                 msg_error.show()
                 msg_error.connect("response", self.error_response)
                 return
@@ -375,7 +382,7 @@ class EditInfoWindow:
             except ValueError:
                 msg_error = gtk.MessageDialog(self.editInfoWindow,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                                             gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,
-                                            "Invalid value! Only numbers allowed for minimal and maximal values")
+                                            _("Invalid value! Only numbers allowed for minimal and maximal values"))
                 msg_error.show()
                 msg_error.connect("response", self.error_response)
                 return
@@ -393,7 +400,7 @@ class EditInfoWindow:
                     msg_error = gtk.MessageDialog(self.editInfoWindow,
                                                   gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                                                   gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,
-                                                  "Invalid value! Only unique numbers allowed")
+                                                  _("Invalid value! Only unique numbers allowed"))
                     
                     msg_error.show()
                     msg_error.connect("response", self.error_response)
@@ -430,7 +437,7 @@ class EditInfoWindow:
             
         msg_saved = gtk.MessageDialog(self.editInfoWindow,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                                           gtk.MESSAGE_INFO, gtk.BUTTONS_OK,
-                                          "Info about " + self.param_path +" successfully saved.")
+                                          _("Info about ") + self.param_path +_(" successfully saved."))
         msg_saved.show()
         msg_saved.connect("response", self.dlg_ok)
 

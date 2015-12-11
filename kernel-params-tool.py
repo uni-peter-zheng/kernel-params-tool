@@ -5,7 +5,9 @@
 import pygtk
 pygtk.require('2.0')
 import gtk, gobject
+import pango
 import locale
+import gettext
 
 from reader import *
 from writer import *
@@ -21,44 +23,33 @@ from xml.etree.ElementTree import Element
 
 class MainApp:
     dirname = "/proc/sys"
-    maintitle = "" 
-    applybuttontitle=""
-    applyallbuttontitle=""
-    restorebuttontitle=""
-    restoreallbuttontitle=""
-    settinginfobuttontitle=""
-    quitbuttontitle=""
     selected_dir = dirname
     selected_param=""
     selected_dirtreestore_path = None
-    dpfilename="/etc/kernel-params-tool/description.xml"
+    dpfilename="/etc/kernel-params-tool/description_en.xml"
     langfilename="/etc/kernel-params-tool/language.xml"
     
     def __init__(self):
-        locale_lang = locale.getdefaultlocale()
-        language_xml = ElementTree(file=self.language_xml)
-        language_root = language_xml.getroot()
-        if locale_lang[0] == "zh_CN":
-            language = language_root.find('zh_CN')
-        else:
-            language = language_root.find('en_US')
+        gettext.bindtextdomain("kernel-params-tool","/usr/share/locale/")
+        gettext.textdomain("kernel-params-tool")
+        _=gettext.gettext
 
-        self.maintitle = language.find('Main_title').text
-        self.applybuttontitle = language.find('Apply').text
-        self.applyallbuttontitle = language.find('Apply_all').text
-        self.restorebuttontitle = language.find('Restore').text
-        self.restoreallbuttontitle = language.find('Restore_all').text
-        self.settinginfobuttontitle = language.find('Setting_info').text
-        self.quitbuttontitle = language.find('Quit').text
+        locale_lang = locale.getdefaultlocale()
+        if locale_lang[0] == "zh_CN":
+            self.dpfilename = "/etc/kernel-params-tool/description_zh.xml"
+        else:
+            self.dpfilename = "/etc/kernel-params-tool/description_en.xml"
+
         self.procReader = Reader()
         self.editedParams = ParamStorage()
         self.procWriter = Writer(self.editedParams)        
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_position(gtk.WIN_POS_CENTER)
-        self.window.set_title(self.maintitle)
+        self.window.set_title(_("kernrl params tool"))
         self.window.set_border_width(15)
-        self.window.set_size_request(1000,600)
+        self.window.set_size_request(800,550)
         
+        self.param_path=None
         # two boxes, first for directory tree (left),
         # second for parameters list (upper right)
         self.treeBox = gtk.VBox(False,0)
@@ -90,7 +81,7 @@ class MainApp:
         # treeview, cellrenderer and columns for parameters list
         self.paramview = gtk.TreeView(self.paramstore)
         self.paramcell = gtk.CellRendererText()
-        self.paramcolumn = gtk.TreeViewColumn("Parameters", self.paramcell, markup=0)
+        self.paramcolumn = gtk.TreeViewColumn(_("Parameters"), self.paramcell, markup=0)
         self.paramview.append_column(self.paramcolumn)
 
         self.paramcolumn.add_attribute(self.paramcell, 'text', 0)
@@ -98,37 +89,60 @@ class MainApp:
         self.paramcolumn.set_sort_column_id(0)
         self.paramview.set_reorderable(False)
         
+
         # ScrolledWindow for treeBox
         self.treeScroll = gtk.ScrolledWindow()
-        self.treeScroll.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+        self.treeScroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
         self.treeScroll.add_with_viewport(self.treeBox)
+        self.treeScroll.set_size_request(160, 0);
+
+        # ScrolledWindow for paramInfo
+        self.paramInfoScroll = gtk.ScrolledWindow()
+        self.paramInfoScroll.set_border_width(5)
+        self.paramInfoScroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 
         # ScrolledWindow for paramView
         self.paramScroll = gtk.ScrolledWindow()
-        self.paramScroll.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+        self.paramScroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
         self.paramScroll.add(self.paramview)
 
         self.descParser=DescriptionParser()
         self.descParser.setXMLFileName(self.dpfilename)
-        self.eiwindow = EditInfoWindow(self.descParser, self.paramview)
+        self.eiwindow = EditInfoWindow(self.descParser, self.paramview, gettext)
 
         # pack directory tree in treeBox and pack scrolledwindow of parameters list
         # in paramBox
         self.treeBox.pack_start(self.dirview, True, True, 0)
         self.paramBox.pack_start(self.paramScroll, True, True, 0)
 
+        # this is frame for view param info
+        self.paraminfoframe = gtk.Frame(_("Info:"))
+        self.paramBox.pack_start(self.paraminfoframe, True, True, 0)
+
         # this is frames for viewing values
-        self.viewframe = gtk.Frame("Selected parameter values:")
-        self.viewinfoframe = gtk.Frame("Selected parameter value:")
+        self.viewframe = gtk.Frame(_("Selected parameter values:"))
+        self.viewinfoframe = gtk.Frame(_("Selected parameter value:"))
         
         self.paramBox.pack_start(self.viewframe,True,True,0)
         self.paramBox.pack_start(self.viewinfoframe,True,True,0)        
 
+        # create a label for param info
+        #self.paraminfoview = gtk.Label()
+        self.paraminfotext = gtk.TextBuffer()
+        self.paraminfoview = gtk.TextView(self.paraminfotext)
+        #self.paraminfoview.set_alignment(0, 0)
+        #self.paraminfoview.set_padding(2, 2)
+        self.paraminfoview.set_editable(False)
+        self.paraminfoview.set_wrap_mode(gtk.WRAP_WORD_CHAR)
+        self.paraminfoview.set_can_focus(False)
+        self.paramInfoScroll.add_with_viewport(self.paraminfoview)
+        self.paraminfoframe.add(self.paramInfoScroll)        
 
         # create a label for "readonly" params
         self.valueinfoview = gtk.Label()
         self.valueinfoview.set_alignment(0, 0)
-        self.valueinfoview.set_padding(2, 2)        
+        self.valueinfoview.set_padding(2, 2)       
+
         # create TreeView, ListStore and scrolled window
         # for parameter view
         self.valuestore = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING,
@@ -140,10 +154,10 @@ class MainApp:
         self.valuecell_restore = gtk.CellRendererToggle()
         self.valuecell_restore.set_property('activatable', True)
         
-        self.valuecolumn_name = gtk.TreeViewColumn("Subparameter name", self.valuecell_name)
-        self.valuecolumn_current = gtk.TreeViewColumn("Current value", self.valuecell_current)
-        self.valuecolumn_next = gtk.TreeViewColumn("New value", self.valuecell_next)
-        self.valuecolumn_restore = gtk.TreeViewColumn("Restore enabled", self.valuecell_restore)
+        self.valuecolumn_name = gtk.TreeViewColumn(_("Subparameter name"), self.valuecell_name)
+        self.valuecolumn_current = gtk.TreeViewColumn(_("Current value"), self.valuecell_current)
+        self.valuecolumn_next = gtk.TreeViewColumn(_("New value"), self.valuecell_next)
+        self.valuecolumn_restore = gtk.TreeViewColumn(_("Restore enabled"), self.valuecell_restore)
         self.valuecell_restore.connect('toggled', self.onToggleRestore, self.valuestore)                
         
         self.valuetreeview.append_column(self.valuecolumn_current)
@@ -181,12 +195,12 @@ class MainApp:
         self.buttonBox = gtk.HBox(True,10)
         self.paramBox.pack_end(self.buttonBox, False, True, 5)
 
-        self.applyButton= gtk.Button(self.applybuttontitle)
-        self.applyAllButton= gtk.Button(self.applyallbuttontitle)
-        self.restoreButton= gtk.Button(self.restorebuttontitle)
-        self.restoreAllButton= gtk.Button(self.restoreallbuttontitle)
-        self.editinfoButton = gtk.Button(self.settinginfobuttontitle)
-        self.quitButton = gtk.Button(self.quitbuttontitle)
+        self.applyButton= gtk.Button(_("Apply"))
+        self.applyAllButton= gtk.Button(_("Apply_all"))
+        self.restoreButton= gtk.Button(_("Restore"))
+        self.restoreAllButton= gtk.Button(_("Restore_all"))
+        self.editinfoButton = gtk.Button(_("Setting_info"))
+        self.quitButton = gtk.Button(_("Quit"))
 
         self.applyButton.set_sensitive(False)
         self.restoreButton.set_sensitive(False)                
@@ -212,11 +226,14 @@ class MainApp:
         self.subparamselection = self.valuetreeview.get_selection()
         self.subparamselection.set_mode(gtk.SELECTION_SINGLE)        
         
+        #print self.paraminfoview.get_parent().get_parent().size_request()
+        #print self.paraminfoframe.size_request()
+        #self.paraminfoview.set_size_request(67,84)
         
         # signal handlers definitions
         self.dirview.connect("cursor-changed", self.onDirSelect)
         self.paramview.connect("cursor-changed", self.onParamSelect)
-        self.paramview.connect("row-activated", self.onParamInfo)
+        #self.paramview.connect("row-activated", self.onParamInfo)
         self.valuetreeview.connect("row-activated", self.onParamEdit)        
 
         self.applyButton.connect("clicked", self.onApply)
@@ -232,6 +249,7 @@ class MainApp:
 
     def onDirSelect(self, treeview):
         dirIter = self.dirselection.get_selected()[1]
+        self.clear_paramInfo()
 
         try:
             path = dirValue = self.dirstore.get_value(dirIter, 0)
@@ -281,28 +299,32 @@ class MainApp:
             paramValue = self.paramstore.get_value(listIter, 0)
         if paramValue!=self.selected_param:
             self.valuestore.clear()
-
+            
+            self.update_paramInfo(self.selected_dir +
+                                      "/" + paramValue)
             param_locked=self.descParser.isLocked(self.selected_dir +
                                                       "/" + paramValue)
             param_readonly = self.procReader.isReadOnly(self.selected_dir +
                                                         "/" + paramValue)
-                
+            param_writeonly = self.procReader.isWriteOnly(self.selected_dir + 
+                                                          "/" + paramValue)
             try:
                 param_content=self.procReader.readContent( self.selected_dir +
                                                            "/" + paramValue)
             except IOError, (errno, strerror):
-                self.valuestore.clear()            
-                msg_error = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                                              gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,
-                                              "error reading file " + self.selected_dir + "/" + paramValue +
-                                              "\n" + strerror)
-                msg_error.show()
-                msg_error.connect("response", self.error_response)
-                self.editinfoButton.set_sensitive(False)
-                self.applyButton.set_sensitive(False)
-                self.restoreButton.set_sensitive(False)
-                return
-            
+                self.valuestore.clear() 
+                param_content=''
+                    #msg_error = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                    #                              gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,
+                    #                              "error reading file " + self.selected_dir + "/" + paramValue +
+                    #                              "\n" + strerror)
+                    #msg_error.show()
+                    #msg_error.connect("response", self.error_response)
+                    #self.editinfoButton.set_sensitive(False)
+                    #self.applyButton.set_sensitive(False)
+                    #self.restoreButton.set_sensitive(False)
+                    #return
+
             subparams = self.enumerate_subparams(param_content)
             if (param_locked or param_readonly) and len(subparams)==1:
                 self.viewframe.hide_all()
@@ -335,7 +357,11 @@ class MainApp:
                 except TypeError:
                     new_value.append('')                    
             if len(subparams)>1:
-                if len(self.valuetreeview.get_columns())!=4:
+                if len(self.valuetreeview.get_columns())==2:
+                    self.valuetreeview.insert_column(self.valuecolumn_name,0)
+                    self.valuetreeview.append_column(self.valuecolumn_restore)
+                if len(self.valuetreeview.get_columns())==1:
+                    self.valuetreeview.insert_column(self.valuecolumn_current,0)
                     self.valuetreeview.insert_column(self.valuecolumn_name,0)
                     self.valuetreeview.append_column(self.valuecolumn_restore)
                     
@@ -378,14 +404,18 @@ class MainApp:
             else:
                 if len(subparams)==0:
                     subparams=['']
-                if len(self.valuetreeview.get_columns())==4:
-                    self.valuetreeview.remove_column(self.valuecolumn_name)                    
-                    self.valuetreeview.remove_column(self.valuecolumn_restore)
 
                 self.subattr = self.descParser.getSubParamsAttr(self.selected_dir + "/" +paramValue)
+
                 if self.subattr!=None:
+                    if len(self.valuetreeview.get_columns())==4:
+                        self.valuetreeview.remove_column(self.valuecolumn_name)                    
+                        self.valuetreeview.remove_column(self.valuecolumn_restore)
+                    if len(self.valuetreeview.get_columns())==1:
+                        self.valuetreeview.insert_column(self.valuecolumn_current,0)
                     current_val = subparams[0]
                     changed_val = new_value[0]
+
                     if self.subattr[0]['type']=='number_items':
                         description_old = self.descParser.getItemDescription(self.selected_dir + "/" + paramValue,0,
                                                              subparams[0])
@@ -398,6 +428,12 @@ class MainApp:
                     self.valuestore.append([None,current_val, changed_val,
                                             True])                                    
                 else:
+                    if len(self.valuetreeview.get_columns())==4:
+                        self.valuetreeview.remove_column(self.valuecolumn_current)
+                        self.valuetreeview.remove_column(self.valuecolumn_name)                    
+                        self.valuetreeview.remove_column(self.valuecolumn_restore)
+                    if len(self.valuetreeview.get_columns())==2:
+                        self.valuetreeview.remove_column(self.valuecolumn_current)
                     self.valuestore.append([None,subparams[0], new_value[0],
                                             True])                                                        
             self.selected_param = paramValue
@@ -430,15 +466,15 @@ class MainApp:
                     break
             try:
                 if attr['type']=='string':
-                    self.paramEditor = StringParamEditor(self.editedParams)
+                    self.paramEditor = StringParamEditor(self.editedParams, gettext)
                 elif attr['type']=='number_range':
-                    self.paramEditor = IntRangeParamEditor(self.editedParams)
+                    self.paramEditor = IntRangeParamEditor(self.editedParams, gettext)
                 elif attr['type']=='number_items':
-                    self.paramEditor = IntItemsParamEditor(self.editedParams)                        
+                    self.paramEditor = IntItemsParamEditor(self.editedParams, gettext)                        
             except TypeError:
-                self.paramEditor = StringParamEditor(self.editedParams)
+                self.paramEditor = StringParamEditor(self.editedParams, gettext)
         else:
-            self.paramEditor = StringParamEditor(self.editedParams)        
+            self.paramEditor = StringParamEditor(self.editedParams, gettext)        
         self.paramEditor.edit_parameter(self.selected_dir + "/" + self.selected_param,
                               str(self.valuestore.get_value(subIter,1)),
                                     dirPath, listPath, self.paramview,
@@ -446,7 +482,7 @@ class MainApp:
         self.selected_param=None        
         
     def onParamInfo(self, treeview, path, column):
-        self.iwindow = InfoWindow()
+        self.iwindow = InfoWindow(self.dpfilename)
         self.iwindow.show_info(self.selected_dir + "/" + self.selected_param)        
 
     def error_response(self, dlg, response_id):
@@ -470,19 +506,21 @@ class MainApp:
 
 
     def onApplyAll(self, button):
-        applywindow = ApplyRestoreWindow("Apply all parameters",
-                                         "Selected parameters will be applied to kernel",
+        _=gettext.gettext
+        applywindow = ApplyRestoreWindow(_("Apply all parameters"),
+                                         _("Selected parameters will be applied to kernel"),
                                          self.editedParams, self.dirstore,
                                          self.paramstore, self.dirview,
-                                         self.dirname, self.selected_dir, True)
+                                         self.dirname, self.selected_dir, True, gettext)
             
 
     def onRestoreAll(self, button):
-        restorewindow = ApplyRestoreWindow("Restore all parameters",
-                                         "Selected parameters will be restored from current kernel values",
+        _=gettext.gettext
+        restorewindow = ApplyRestoreWindow(_("Restore all parameters"),
+                                         _("Selected parameters will be restored from current kernel values"),
                                          self.editedParams, self.dirstore,
                                          self.paramstore, self.dirview,
-                                         self.dirname, self.selected_dir, False)
+                                         self.dirname, self.selected_dir, False, gettext)
         
     def onRestore(self, button):
         psel = self.paramselection.get_selected()
@@ -510,6 +548,16 @@ class MainApp:
                 self.editedParams.remove(self.selected_dirtreestore_path, listPath,
                                          subPath[0])
                 model.set_value(listIter, 0, filename)       
+
+    def update_paramInfo(self, param_path):
+        param_info = self.descParser.getInfo(param_path)
+        if param_info!=None:
+            self.paraminfotext.set_text(param_info)
+        else:
+            self.paraminfotext.set_text("")
+
+    def clear_paramInfo(self):
+        self.paraminfotext.set_text("")
 
     def onEditInfo(self, button):
         one=False            

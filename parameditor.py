@@ -9,6 +9,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk, gobject
+import gettext
 
 from storage import *
         
@@ -22,14 +23,16 @@ class ParamEditor:
     new_value = None
 
 
-    def __init__(self, paramstorage, editor_widget):        
+    def __init__(self, paramstorage, editor_widget, gettext):
+        self.gettext=gettext
+        _=gettext.gettext
         self.paramstorage = paramstorage
         self.editParamWindow = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.editParamWindow.set_position(gtk.WIN_POS_CENTER)
         editParamVBox = gtk.VBox(False,10)
-        editParamFrame = gtk.Frame("New value")
+        editParamFrame = gtk.Frame(_("New value"))
 
-        infoFrame = gtk.Frame("Info")
+        infoFrame = gtk.Frame(_("Info"))
         self.infoText = gtk.Label()
         self.infoText.set_alignment(0, 0)
         self.infoText.set_padding(2, 2)
@@ -47,9 +50,9 @@ class ParamEditor:
         editParamVBox.pack_start(editParamFrame,False,False,0)
         
         editParamButtonBox = gtk.HBox(True,10)
-        saveButton = gtk.Button("Save value and exit")
-        restoreButton = gtk.Button("Restore value")                
-        exitButton = gtk.Button("Exit")
+        saveButton = gtk.Button(_("Save value and exit"))
+        restoreButton = gtk.Button(_("Restore value"))            
+        exitButton = gtk.Button(_("Exit"))
         editParamButtonBox.pack_start(saveButton,True,True,0)
         editParamButtonBox.pack_start(restoreButton,True,True,0)
         editParamButtonBox.pack_start(exitButton,True,True,0)
@@ -73,7 +76,8 @@ class ParamEditor:
         
     def edit_parameter(self, fs_path, old_val, dirPath, listPath, paramview,
                        descParser, subparam_index):
-        self.editParamWindow.set_title("edit parameter " + fs_path)
+        _=self.gettext.gettext
+        self.editParamWindow.set_title(_("edit parameter ") + fs_path)
         self.fs_path=fs_path
         self.listPath = listPath
         self.dirPath = dirPath
@@ -149,19 +153,20 @@ class ParamEditor:
 
         
 class StringParamEditor(ParamEditor):
-    def __init__(self,paramstorage):
+    def __init__(self,paramstorage, gettext):
         self.subparamvalue = gtk.Entry()
-        ParamEditor.__init__(self, paramstorage, self.subparamvalue)
+        ParamEditor.__init__(self, paramstorage, self.subparamvalue, gettext)
 
     def saveClick(self, button):
+        _=gettext.gettext
         text = self.subparamvalue.get_text()
         try:
             maxlen = int(self.attrs['maxlen'])
         except KeyError:
             maxlen=0
         if maxlen<len(text) and maxlen!=0:
-            self.showError("Maximum length for this string value is: " + str(maxlen) +
-                                    "\nPress \"Settings\" button on main form if you want to change it.")
+            self.showError(_("Maximum length for this string value is: ") + str(maxlen) +
+                                    _("\nPress \"Settings\" button on main form if you want to change it."))
             return
             
         ParamEditor.saveClick(self, button,text)
@@ -186,9 +191,9 @@ class StringParamEditor(ParamEditor):
                                    paramview, descParser, subparam_index)            
 
 class IntRangeParamEditor(ParamEditor):
-    def __init__(self,paramstorage):
+    def __init__(self,paramstorage, gettext):
         self.subparam_spin = gtk.SpinButton()
-        ParamEditor.__init__(self, paramstorage, self.subparam_spin)        
+        ParamEditor.__init__(self, paramstorage, self.subparam_spin, gettext)        
 
 
     def edit_parameter(self, fs_path, old_val, dirPath, listPath, paramview,
@@ -220,8 +225,8 @@ class IntRangeParamEditor(ParamEditor):
         maxval = int(self.attrs['max'])
         minval = int(self.attrs['min'])
         if spin_value>maxval or spin_value<minval:
-            self.showError("Value for this parameter must be between " + minval + " and "
-                           + minval + ".\nPress \"Settings\" button on main form if you want to change it's range.")
+            self.showError(_("Value for this parameter must be between ") + minval + _(" and ")
+                           + minval + _(".\nPress \"Settings\" button on main form if you want to change it's range."))
             return
             
         ParamEditor.saveClick(self, button,str(spin_value))
@@ -230,7 +235,7 @@ class IntRangeParamEditor(ParamEditor):
         self.subparam_spin.set_value(int(self.old_value))        
 
 class IntItemsParamEditor(ParamEditor):
-    def __init__(self,paramstorage):
+    def __init__(self,paramstorage, gettext):
         
         self.comboStore = gtk.ListStore(gobject.TYPE_STRING)
         self.valueCombo = gtk.ComboBox(self.comboStore)
@@ -238,7 +243,7 @@ class IntItemsParamEditor(ParamEditor):
         self.valueCombo.pack_start(cell, True)
         self.valueCombo.add_attribute(cell, 'text', 0)        
         self.items = []
-        ParamEditor.__init__(self, paramstorage, self.valueCombo)
+        ParamEditor.__init__(self, paramstorage, self.valueCombo, gettext)
 
 
     def edit_parameter(self, fs_path, old_val, dirPath, listPath, paramview,

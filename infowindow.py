@@ -11,8 +11,8 @@ from storage import *
 from descriptionparser import *
 
 class InfoWindow:
-    def __init__(self):
-        self.dpfilename="/etc/kernel-params-tool/description.xml"
+    def __init__(self, dpfilename):
+        self.dpfilename = dpfilename
         self.param_path=None
         self.dp = DescriptionParser()
         self.dp.setXMLFileName(self.dpfilename)

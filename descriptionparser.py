@@ -29,6 +29,7 @@ class DescriptionParser:
         df = open(self.description_file, "w")
         df.write(data)
         df.close()        
+        self.dom = xml.dom.minidom.parse(self.description_file)        
 
     
     def setInfo(self, param_path, data):
@@ -42,9 +43,9 @@ class DescriptionParser:
         except IndexError:
             # if <info> tag doesn't exist, create it
             infotext = self.dom.createElement("info")
-        
-        infotext.appendChild(self.dom.createTextNode(data))
-        p.appendChild(infotext)
+        if len(data)!=0:
+            infotext.appendChild(self.dom.createTextNode(data))
+            p.appendChild(infotext)
 
 
     def findParamByPath(self, param_path):

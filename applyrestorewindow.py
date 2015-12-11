@@ -10,9 +10,10 @@ from writer import *
 
 class ApplyRestoreWindow:
     def __init__(self, title, framecaption, pathstorage, dirstore, paramstore,
-                 dirmodelview, rootDir, selected_dir, mode):
+                 dirmodelview, rootDir, selected_dir, mode, gettext):
         # mode = True - do apply
         # mode = False - do restore
+        _=gettext.gettext
         self.mode = mode
         self.rootDir = rootDir
         self.dirpath_listpath = []
@@ -36,16 +37,16 @@ class ApplyRestoreWindow:
         self.viewframe.add(self.paramScroll)
 
         self.paramcell = gtk.CellRendererText()
-        self.paramcolumn = gtk.TreeViewColumn("Path", self.paramcell)
+        self.paramcolumn = gtk.TreeViewColumn(_("Path"), self.paramcell)
         self.paramview.append_column(self.paramcolumn)
         self.paramcolumn.add_attribute(self.paramcell, 'text', 0)        
 
         self.togglecell = gtk.CellRendererToggle()
         self.togglecell.set_property('activatable', True)
         if self.mode:
-            self.togglecolumn = gtk.TreeViewColumn("Apply", self.togglecell)
+            self.togglecolumn = gtk.TreeViewColumn(_("Apply"), self.togglecell)
         else:
-            self.togglecolumn = gtk.TreeViewColumn("Restore", self.togglecell)
+            self.togglecolumn = gtk.TreeViewColumn(_("Restore"), self.togglecell)
         self.paramview.append_column(self.togglecolumn)
         self.togglecolumn.add_attribute(self.togglecell, "active", 1)
 
@@ -55,10 +56,10 @@ class ApplyRestoreWindow:
         self.buttonBox = gtk.HBox(True,0)
 
         if self.mode:
-            self.okButton = gtk.Button("Apply selected")
+            self.okButton = gtk.Button(_("Apply selected"))
         else:
-            self.okButton = gtk.Button("Restore selected")
-        self.cancelButton = gtk.Button("Cancel")
+            self.okButton = gtk.Button(_("Restore selected"))
+        self.cancelButton = gtk.Button(_("Cancel"))
         
         self.togglecell.connect('toggled', self.onToggle, self.liststore)
         self.okButton.connect('clicked', self.onOk)

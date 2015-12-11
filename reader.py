@@ -17,6 +17,14 @@ class Reader:
             return True
         f.close()
         return False
+    
+    def isWriteOnly(self, path):
+        try:
+            f = open(path, "r")
+        except IOError:
+            return True
+        f.close()
+        return False
 
     def readContent(self, path):
         f = open(path, "r")
