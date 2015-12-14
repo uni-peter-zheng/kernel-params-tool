@@ -26,7 +26,7 @@ class MainApp:
     selected_dir = dirname
     selected_param=""
     selected_dirtreestore_path = None
-    dpfilename="/etc/kernel-params-tool/description_en.xml"
+    dpfilename="/usr/share/kernel-params-tool/desc/description_en.xml"
     
     def __init__(self):
         gettext.bindtextdomain("kernel-params-tool","/usr/share/locale/")
@@ -35,9 +35,9 @@ class MainApp:
 
         locale_lang = locale.getdefaultlocale()
         if locale_lang[0] == "zh_CN":
-            self.dpfilename = "/etc/kernel-params-tool/description_zh.xml"
+            self.dpfilename = "/usr/share/kernel-params-tool/desc/description_zh.xml"
         else:
-            self.dpfilename = "/etc/kernel-params-tool/description_en.xml"
+            self.dpfilename = "/usr/share/kernel-params-tool/desc/description_en.xml"
 
         self.procReader = Reader()
         self.editedParams = ParamStorage()
