@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # here is the Reader class for reading kernel parameters from /proc/sys
 import os
+import stat
 
 class Reader:  
     def getSubDirList(self, path):
@@ -11,20 +12,24 @@ class Reader:
         return os.walk(path).next()[2]
 
     def isReadOnly(self, path):
-        try:
-            f = open(path, "w")
-        except IOError:
-            return True
-        f.close()
-        return False
-    
+        fileinfo = os.stat(path)
+        if fileinfo.st_mode & stat.S_IREAD > 0 :
+            if fileinfo.st_mode & stat.S_IWRITE > 0 :
+                return False
+            else:
+                return True
+        else:
+            return False
+
     def isWriteOnly(self, path):
-        try:
-            f = open(path, "r")
-        except IOError:
-            return True
-        f.close()
-        return False
+        fileinfo = os.stat(path)
+        if fileinfo.st_mode & stat.S_IWRITE > 0 :
+            if fileinfo.st_mode & stat.S_IREAD > 0 :
+                return False
+            else:
+                return True
+        else:
+            return False
 
     def readContent(self, path):
         f = open(path, "r")

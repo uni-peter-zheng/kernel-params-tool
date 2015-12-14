@@ -394,15 +394,17 @@ class MainApp:
             else:
                 if len(subparams)==0:
                     subparams=['']
+                if len(self.valuetreeview.get_columns())==4:
+                    self.valuetreeview.remove_column(self.valuecolumn_name)                    
+                    self.valuetreeview.remove_column(self.valuecolumn_restore)
+                if len(self.valuetreeview.get_columns())==1:
+                    self.valuetreeview.insert_column(self.valuecolumn_current, 0)
 
+                if param_writeonly:
+                    self.valuetreeview.remove_column(self.valuecolumn_current)
+                
                 self.subattr = self.descParser.getSubParamsAttr(self.selected_dir + "/" +paramValue)
-
                 if self.subattr!=None:
-                    if len(self.valuetreeview.get_columns())==4:
-                        self.valuetreeview.remove_column(self.valuecolumn_name)                    
-                        self.valuetreeview.remove_column(self.valuecolumn_restore)
-                    if len(self.valuetreeview.get_columns())==1:
-                        self.valuetreeview.insert_column(self.valuecolumn_current,0)
                     current_val = subparams[0]
                     changed_val = new_value[0]
 
@@ -418,12 +420,6 @@ class MainApp:
                     self.valuestore.append([None,current_val, changed_val,
                                             True])                                    
                 else:
-                    if len(self.valuetreeview.get_columns())==4:
-                        self.valuetreeview.remove_column(self.valuecolumn_current)
-                        self.valuetreeview.remove_column(self.valuecolumn_name)                    
-                        self.valuetreeview.remove_column(self.valuecolumn_restore)
-                    if len(self.valuetreeview.get_columns())==2:
-                        self.valuetreeview.remove_column(self.valuecolumn_current)
                     self.valuestore.append([None,subparams[0], new_value[0],
                                             True])                                                        
             self.selected_param = paramValue
