@@ -27,7 +27,6 @@ class MainApp:
     selected_param=""
     selected_dirtreestore_path = None
     dpfilename="/etc/kernel-params-tool/description_en.xml"
-    langfilename="/etc/kernel-params-tool/language.xml"
     
     def __init__(self):
         gettext.bindtextdomain("kernel-params-tool","/usr/share/locale/")
